@@ -335,6 +335,9 @@ int main()
     int nrLists;
     ListaCirculara<int> liste[100];
 
+    /// Exemplu pentru citire/afisare de la tastatura.
+    /// Functioneaza si pentru citire/afisare din/in fisiere.
+
     cout << "Cate liste doriti sa introduceti?\n";
     cin >> nrLists;
     for(int i = 0; i < nrLists; i++)
