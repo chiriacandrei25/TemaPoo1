@@ -40,6 +40,10 @@ public:
     {
         return val < node.val;
     }
+    bool operator > (const Nod<T> &node) const
+    {
+        return val > node.val;
+    }
     template <typename U>
     friend istream& operator >> (istream& in, Nod<U> *node);
 
@@ -141,8 +145,8 @@ public:
         {
             Nod<T> *nod1 = findKthNode(nrNodes - 1);
             Nod<T> *nod2 = nod1->getNext()->getNext();
-            delete nod1->getNext();
-            *nod1->getNext() = *nod2;
+            delete nod1->next;
+            nod1->next = nod2;
             nrNodes--;
             first_node = nod2;
             return;
@@ -150,7 +154,7 @@ public:
         Nod<T> *nod1 = findKthNode(pos - 1);
         Nod<T> *nod2 = nod1->getNext()->getNext();
         delete nod1->getNext();
-        *nod1->getNext() = *nod2;
+        nod1->next = nod2;
         nrNodes--;
     }
 
@@ -188,7 +192,7 @@ public:
         {
             cout << findKthNode(pos) << " deleted\n";
             delNode(pos);
-            pos = (pos + k) % nrNodes;
+            pos = (pos + k - 1) % nrNodes;
         }
     }
 
@@ -202,7 +206,7 @@ public:
         int i = 0, j = 0;
         while(i < this->nrNodes || j < list2.nrNodes)
         {
-            if(j == list2.nrNodes || (*node1) < (*node2))
+            if(j == list2.nrNodes || (i < this->nrNodes && (*node1) < (*node2)))
             {
                 Nod<T> *new_node = new Nod<T>(*node1);
                 finalList->addNode(new_node, i + j);
@@ -254,6 +258,39 @@ public:
         return (*this);
     }
 
+    bool operator < (const ListaCirculara<T> &lista)
+    {
+        Nod<T> *node1 = this->first_node, *node2 = lista.first_node;
+        int i = 0, j = 0;
+        while(i < this->nrNodes || j < lista.nrNodes)
+        {
+            if(i == this->nrNodes || (*node1) < (*node2))
+                return true;
+            if(j == lista.nrNodes || (*node1) > (*node2))
+                return false;
+            i++;
+            node1 = node1->getNext();
+            j++;
+            node2 = node2->getNext();
+        }
+        return false;
+    }
+
+    bool operator == (const ListaCirculara<T> &lista)
+    {
+        if(this->nrNodes != lista.nrNodes)
+            return false;
+        Nod<T> *node1 = this->first_node, *node2 = lista.first_node;
+        for(int i = 0; i < lista.nrNodes; i++)
+        {
+            if((*node1) != (*node2))
+                return false;
+            node1 = node1->getNext();
+            node2 = node2->getNext();
+        }
+        return true;
+    }
+
     template <typename U>
     friend istream& operator >> (istream& in, ListaCirculara<U> &lista);
     template <typename U>
@@ -283,7 +320,7 @@ ostream& operator << (ostream& out, const ListaCirculara<T> &lista)
     if(lista.nrNodes == 0)
         return out;
 
-    Nod<T> *node = listar.first_node;
+    Nod<T> *node = lista.first_node;
     for(int i = 0; i < lista.nrNodes; i++)
     {
         out << node << " ";
@@ -295,11 +332,71 @@ ostream& operator << (ostream& out, const ListaCirculara<T> &lista)
 
 int main()
 {
-    ListaCirculara<int> lista1;
-    ListaCirculara<int> lista2;
-    cin >> lista1 >> lista2;
-    cout << lista1.mergeLists(lista2);
-    lista1.delFromKtoK(2);
-    cout << lista1;
+    int nrLists;
+    ListaCirculara<int> liste[100];
+
+    cout << "Cate liste doriti sa introduceti?\n";
+    cin >> nrLists;
+    for(int i = 0; i < nrLists; i++)
+    {
+        cout << "Lista " << i << " este : \n";
+        cin >> liste[i];
+    }
+
+    cout << "Listele sortate sunt : " << "\n";
+
+    sort(liste, liste + nrLists);
+    for(int i = 0; i < nrLists; i++)
+        cout << liste[i];
+
+
+    int nrMergedLists, index;
+    ListaCirculara <int> finalList;
+    cout << "Alegeti la cate liste doriti sa dati Merge : \n";
+    cin >> nrMergedLists;
+    cout << "Care sunt listele dupa indici?\n";
+    for(int i = 0; i < nrMergedLists; i++)
+    {
+        cin >> index;
+        if(i == 0)
+            finalList = liste[index];
+        else
+            finalList = finalList.mergeLists(liste[index]);
+    }
+    cout << "Lista finala este : \n";
+    cout << finalList << "\n";
+
+    int nrLists1;
+    ListaCirculara <int> finalList1;
+    cout << "Alegeti cate liste doriti sa concatenati : \n";
+    cin >> nrLists1;
+    cout << "Care sunt listele dupa indici?\n";
+    for(int i = 0; i < nrLists1; i++)
+    {
+        cin >> index;
+        if(i == 0)
+            finalList1 = liste[index];
+        else
+            finalList1 = finalList1 + liste[index];
+    }
+    cout << "Lista finala este : \n";
+    cout << finalList1 << "\n";
+
+    cout << "Haideti sa stergem lista index din k in k\n";
+    cout << "index = ";
+    cin >> index;
+    cout << "k = ";
+    int k;
+    cin >> k;
+    liste[index].delFromKtoK(k);
+    cout << "Lista finala\n";
+    cout << liste[index] << "\n";
+
+    cout << "Haideti sa inversam lista index\n";
+    cout << "index = ";
+    cin >> index;
+    liste[index].reverseList();
+    cout << "Lista finala\n";
+    cout << liste[index] << "\n";
     return 0;
 }
