@@ -112,6 +112,11 @@ public:
     }
     ~ListaCirculara<T>()
     {
+        this->clear();
+    }
+
+    void clear()
+    {
         for(int i = 0; i < nrNodes; i++)
             delNode(0);
     }
@@ -196,48 +201,48 @@ public:
         }
     }
 
-    ListaCirculara<T>& mergeLists(const ListaCirculara<T> &list2)
+    ListaCirculara<T> mergeLists(const ListaCirculara<T> &list2)
     {
         if(this->isIncreasing() == false || list2.isIncreasing() == false)
             throw new exception();
 
-        ListaCirculara<T> *finalList = new ListaCirculara<T>();
+        ListaCirculara<T> finalList;
         Nod<T> *node1 = this->first_node, *node2 = list2.first_node;
         int i = 0, j = 0;
         while(i < this->nrNodes || j < list2.nrNodes)
         {
             if(j == list2.nrNodes || (i < this->nrNodes && (*node1) < (*node2)))
             {
-                Nod<T> *new_node = new Nod<T>(*node1);
-                finalList->addNode(new_node, i + j);
+                Nod<T> new_node(*node1);
+                finalList.addNode(&new_node, i + j);
                 node1 = node1->getNext();
                 i++;
             }
             else
             {
-                Nod<T> *new_node = new Nod<T>(*node2);
-                finalList->addNode(new_node, i + j);
+                Nod<T> new_node(*node2);
+                finalList.addNode(&new_node, i + j);
                 node2 = node2->getNext();
                 j++;
             }
         }
-        return (*finalList);
+        return finalList;
     }
 
-    ListaCirculara<T>& operator + (const ListaCirculara<T> &lista) const
+    ListaCirculara<T> operator + (const ListaCirculara<T> &lista) const
     {
-        ListaCirculara<T> *list1 = new ListaCirculara<T>();
-        ListaCirculara<T> *list2 = new ListaCirculara<T>();
-        *list1 = *this;
-        *list2 = lista;
+        ListaCirculara<T> list1;
+        ListaCirculara<T> list2;
+        list1 = *this;
+        list2 = lista;
 
-        Nod<T> *nod = list1->findKthNode(list1->nrNodes - 1);
-        nod->next = list2->first_node;
-        nod = list2->findKthNode(list2->nrNodes - 1);
-        nod->next = list1->first_node;
-        list1->nrNodes += list2->nrNodes;
+        Nod<T> *nod = list1.findKthNode(list1.nrNodes - 1);
+        nod->next = list2.first_node;
+        nod = list2.findKthNode(list2.nrNodes - 1);
+        nod->next = list1.first_node;
+        list1.nrNodes += list2.nrNodes;
 
-        return (*list1);
+        return list1;
     }
 
     ListaCirculara<T>& operator = (const ListaCirculara<T> &lista)
@@ -258,7 +263,7 @@ public:
         return (*this);
     }
 
-    bool operator < (const ListaCirculara<T> &lista)
+    bool operator < (const ListaCirculara<T> &lista) const
     {
         Nod<T> *node1 = this->first_node, *node2 = lista.first_node;
         int i = 0, j = 0;
@@ -276,7 +281,7 @@ public:
         return false;
     }
 
-    bool operator == (const ListaCirculara<T> &lista)
+    bool operator == (const ListaCirculara<T> &lista) const
     {
         if(this->nrNodes != lista.nrNodes)
             return false;
@@ -403,3 +408,6 @@ int main()
     cout << liste[index] << "\n";
     return 0;
 }
+
+/// scot referintele si clear
+/// operatorul minus - <T>
