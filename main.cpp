@@ -93,7 +93,7 @@ class ListaCirculara
 {
 private:
     Nod<T> *first_node;
-    int nrNodes;
+    int nrNodes = 0;
 
 public:
     ListaCirculara<T>()
@@ -117,8 +117,13 @@ public:
 
     void clear()
     {
+        Nod<T> *node = first_node;
         for(int i = 0; i < nrNodes; i++)
-            delNode(0);
+        {
+            Nod<T> *cnode = node;
+            node = node->next;
+            delete cnode;
+        }
     }
 
     Nod<T>* findKthNode(const int &k) const
@@ -213,15 +218,15 @@ public:
         {
             if(j == list2.nrNodes || (i < this->nrNodes && (*node1) < (*node2)))
             {
-                Nod<T> new_node(*node1);
-                finalList.addNode(&new_node, i + j);
+                Nod<T> *new_node = new Nod<T>(*node1);
+                finalList.addNode(new_node, i + j);
                 node1 = node1->getNext();
                 i++;
             }
             else
             {
-                Nod<T> new_node(*node2);
-                finalList.addNode(&new_node, i + j);
+                Nod<T> *new_node = new Nod<T>(*node2);
+                finalList.addNode(new_node, i + j);
                 node2 = node2->getNext();
                 j++;
             }
@@ -249,6 +254,7 @@ public:
     {
         if(lista.nrNodes == 0)
             return (*this);
+        this->clear();
         nrNodes = lista.nrNodes;
         first_node = new Nod<T>(*lista.first_node);
         Nod<T>* cur_node = first_node;
@@ -294,6 +300,17 @@ public:
             node2 = node2->getNext();
         }
         return true;
+    }
+
+    bool operator - (const T &ob) const
+    {
+        Nod<T>* node = first_node;
+        for(int i = 0; i < nrNodes; i++)
+        {
+            if(node->val == ob)
+                delNode(node);
+            node = node->next;
+        }
     }
 
     template <typename U>
